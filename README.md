@@ -1,37 +1,74 @@
-## Welcome to GitHub Pages
+## Laravel Voyager Repeater Field
 
-You can use the [editor on GitHub](https://github.com/IDB-Media/laravel-voyager-repeater-field/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This repeater field is for use with Laravel Voyager.
+See the original documentation here [Add A Custom Form To Voyager](https://voyager-docs.devdojo.com/customization/adding-custom-formfields) to add your form field to Voyager.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+### Use
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Add a new class to Laravel. 
 
-```markdown
-Syntax highlighted code block
+In this example we create our own FormFields folder in /App/ and place the class in it.
 
-# Header 1
-## Header 2
-### Header 3
+```
+<?php
 
-- Bulleted
-- List
+namespace App\FormFields;
 
-1. Numbered
-2. List
+use TCG\Voyager\FormFields\AbstractHandler;
 
-**Bold** and _Italic_ and `Code` text
+class StripePlansFormField extends AbstractHandler
+{
+    protected $codename = 'plan_features';
 
-[Link](url) and ![Image](src)
+    public function createContent($row, $dataType, $dataTypeContent, $options)
+    {
+        return view('formfields.plan_features', [
+            'row' => $row,
+            'options' => $options,
+            'dataType' => $dataType,
+            'dataTypeContent' => $dataTypeContent
+        ]);
+    }
+}
+
+```
+Next, create the view specified above.
+
+In the view you can add whatever logic you want.
+
+Next we tell Voyager that we have a new form field. We will do this in a service provider (in the example below we use the AppServiceProvider.
+
+```
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use TCG\Voyager\Facades\Voyager;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+       Voyager::addFormField(\App\FormFields\StripePlansFormField::class);
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        //
+    }
+}
+
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/IDB-Media/laravel-voyager-repeater-field/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
